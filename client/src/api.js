@@ -4,17 +4,20 @@ const API_URL = (
   "https://personal-finance-tracker-ana4.onrender.com/api"
 ).replace(/\/$/, "");
 
+export { API_URL };
+
 export async function apiRequest(endpoint, options = {}) {
   const token = localStorage.getItem("token");
   const { headers = {}, ...otherOptions } = options;
 
+  // Prevent missing or duplicate slashes
+  const normalizedEndpoint = endpoint.startsWith("/")
+    ? endpoint
+    : `/${endpoint}`;
+
   let response;
 
   try {
-    const normalizedEndpoint = endpoint.startsWith("/")
-      ? endpoint
-      : `/${endpoint}`;
-
     response = await fetch(`${API_URL}${normalizedEndpoint}`, {
       ...otherOptions,
       headers: {
@@ -29,7 +32,7 @@ export async function apiRequest(endpoint, options = {}) {
     console.error("Backend connection error:", error);
 
     throw new Error(
-      `Cannot connect to backend at ${API_URL}. Please check your internet connection or server status.`
+      `Cannot connect to backend: ${API_URL}`
     );
   }
 
